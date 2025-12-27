@@ -1,40 +1,29 @@
-// --- Dark/Light Mode Switcher ---
-const themeToggle = document.getElementById('theme-toggle');
-const body = document.body;
-const icon = themeToggle.querySelector('i');
+// ===== Theme Toggle =====
+const toggle = document.getElementById('theme-toggle');
+const icon = toggle.querySelector('i');
+const root = document.documentElement;
 
-// Check Local Storage for saved theme
-const currentTheme = localStorage.getItem('theme') || 'dark';
-body.setAttribute('data-theme', currentTheme);
-updateIcon(currentTheme);
+const savedTheme = localStorage.getItem('theme') || 'dark';
+root.setAttribute('data-theme', savedTheme);
+icon.className = savedTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
 
-themeToggle.addEventListener('click', () => {
-    const theme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    body.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    updateIcon(theme);
+toggle.addEventListener('click', () => {
+  const newTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  icon.className = newTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
 });
 
-function updateIcon(theme) {
-    if (theme === 'light') {
-        icon.className = 'fas fa-sun';
-    } else {
-        icon.className = 'fas fa-moon';
-    }
-}
-
-// --- Intersection Observer for Animations ---
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
+// ===== Reveal Animations =====
+const observer = new IntersectionObserver(
+  entries => {
     entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('active');
-        }
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+      }
     });
-}, observerOptions);
+  },
+  { threshold: 0.1 }
+);
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
