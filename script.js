@@ -1,29 +1,51 @@
-// ===== Theme Toggle =====
-const toggle = document.getElementById('theme-toggle');
-const icon = toggle.querySelector('i');
-const root = document.documentElement;
+// REVEAL ANIMATIONS & PROGRESS BARS
+const reveals = document.querySelectorAll(".reveal");
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("active");
 
-const savedTheme = localStorage.getItem('theme') || 'dark';
-root.setAttribute('data-theme', savedTheme);
-icon.className = savedTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+      // Animate progress bars
+      const progressBars = entry.target.querySelectorAll('.progress-bar div');
+      progressBars.forEach(bar => {
+        const percent = bar.getAttribute('data-width');
+        bar.style.width = percent;
+        const label = document.createElement('span');
+        label.textContent = percent;
+        bar.parentElement.appendChild(label);
+      });
+    }
+  });
+}, { threshold: 0.2 });
+reveals.forEach(el => observer.observe(el));
 
-toggle.addEventListener('click', () => {
-  const newTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  root.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-  icon.className = newTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+// DARK/LIGHT MODE TOGGLE
+const themeIcon = document.getElementById('theme-icon');
+themeIcon.addEventListener('click', () => {
+  document.body.classList.toggle('light');
+  themeIcon.classList.toggle('fa-moon');
+  themeIcon.classList.toggle('fa-sun');
 });
 
-// ===== Reveal Animations =====
-const observer = new IntersectionObserver(
-  entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('active');
-      }
-    });
-  },
-  { threshold: 0.1 }
-);
-
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+const typingText = document.getElementById("typing-text");
+const phrases = [
+  "Full Stack .NET Developer"
+];
+let i = 0, j = 0;
+let currentPhrase = [], isDeleting = false;
+function type() {
+  if (i >= phrases.length) i = 0;
+  let fullText = phrases[i];
+  if (!isDeleting) {
+    currentPhrase.push(fullText[j]);
+    typingText.textContent = currentPhrase.join('');
+    j++;
+    if (j === fullText.length) { isDeleting = true; setTimeout(type, 1500); return; }
+  } else {
+    currentPhrase.pop();
+    typingText.textContent = currentPhrase.join('');
+    if (currentPhrase.length === 0) { isDeleting = false; i++; j = 0; }
+  }
+  setTimeout(type, isDeleting ? 50 : 100);
+}
+document.addEventListener("DOMContentLoaded", type);
