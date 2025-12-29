@@ -19,6 +19,15 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.2 });
 reveals.forEach(el => observer.observe(el));
 
+document.querySelectorAll('.progress-bar').forEach(bar => {
+  const value = bar.querySelector('div').getAttribute('data-width');
+  const percent = document.createElement('span');
+  percent.className = 'skill-percent';
+  percent.innerText = value;
+  bar.parentElement.insertBefore(percent, bar.nextSibling);
+});
+
+
 // DARK/LIGHT MODE TOGGLE
 const themeIcon = document.getElementById('theme-icon');
 themeIcon.addEventListener('click', () => {
